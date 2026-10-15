@@ -29,7 +29,7 @@ data:
   max_designs: null                # e.g. 8 for a smoke test
 
 training:
-  epochs: 100
+  epochs: 50
   lr: 2.0e-3                       # for 4 GPUs (one sample per GPU); scale with sqrt(GPUs)
   weight_decay: 0.0
   warmup_epochs: 2

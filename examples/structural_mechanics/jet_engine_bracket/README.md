@@ -74,7 +74,7 @@ python evaluate.py data.root=$DATA/simjeb/converted data.split=splits/simjeb.jso
     data.subset=test output=outputs/deepjeb/evaluation/simjeb_test
 ```
 
-Training runs 100 epochs (every design under every load case, one sample per GPU
+Training runs 50 epochs (every design under every load case, one sample per GPU
 and step) with Muon for the weight matrices and AdamW for the rest, a two-epoch
 warm-up, a cosine decay, bfloat16 autocast and activation checkpointing. A rerun
 resumes from the latest checkpoint. For a quick test:
