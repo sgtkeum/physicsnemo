@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 - 2026 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Recipe 2: out-of-distribution detection of SimJEB designs for the DeepJEB-trained model (ood.py).
+checkpoint: outputs/deepjeb/model.mdlus
+reference:                         # in distribution: what the model was trained on
+  root: ???                        # converted DeepJEB
+  split: splits/deepjeb.json       # fit on train, threshold on val, false alarms on test
+  designs: 600                     # random training designs to fit the detectors (null: all)
+query:                             # designs to screen
+  root: ???                        # converted SimJEB
+  split: splits/simjeb.json
+  subsets: [train, val, test]
+  errors: null                     # optional <evaluate.py output>_cases.csv of these designs, to rank the scores
+scales: stats/deepjeb_scales.json
+coordinate_scale_mm: 100.0
+token_voxel_mm: 2.0
+load: ver                          # load case of the forward pass that yields the latents
+block: 3                           # 0-based index of the GALE block whose node-mean output is scored (the 4th of 8; reported as block4)
+percentile: 99.0                   # threshold of the latent scores: this percentile of the validation designs
+knn_k: 10                          # embedded guard
+seed: 0
+max_designs: null                  # cap every group (smoke tests)
+output_dir: outputs/ood
+
+hydra:
+  run:
+    dir: outputs/hydra
+  output_subdir: null
+  job:
+    chdir: false
