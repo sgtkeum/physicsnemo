@@ -62,15 +62,22 @@ def evaluate(
     r"""One row of :func:`utils.case_metrics` per sample, with its ``shape_id`` and ``load``."""
     data = torch.utils.data.DataLoader(dataset, batch_size=1, num_workers=4)
     rows = []
-    for batch in data:
-        prediction = predict(model, batch, device, precision)
-        rows.append(
-            {
-                "shape_id": int(batch["shape_id"]),
-                "load": LOADS[int(batch["load_id"])],
-                **case_metrics(prediction, batch["target"][0].to(device)),
-            }
-        )
+    tf32 = torch.backends.cuda.matmul.allow_tf32, torch.backends.cudnn.allow_tf32
+    torch.backends.cuda.matmul.allow_tf32 = torch.backends.cudnn.allow_tf32 = (
+        precision != "float32"
+    )  # strict float32
+    try:
+        for batch in data:
+            prediction = predict(model, batch, device, precision)
+            rows.append(
+                {
+                    "shape_id": int(batch["shape_id"]),
+                    "load": LOADS[int(batch["load_id"])],
+                    **case_metrics(prediction, batch["target"][0].to(device)),
+                }
+            )
+    finally:
+        torch.backends.cuda.matmul.allow_tf32, torch.backends.cudnn.allow_tf32 = tf32
     return rows
 
 

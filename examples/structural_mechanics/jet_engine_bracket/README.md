@@ -130,19 +130,32 @@ designs.
 
 ## Results
 
-Single runs of the recipes as configured, on 4 GPUs. Errors are the mean
-per-sample relative L2 errors over every node.
+One run of the recipes as configured, on four H100 GPUs: training took 13.3 hours
+(16 minutes per epoch), the LoRA adaptation 44 minutes, and the OOD screening 11
+minutes on one GPU. Errors are mean per-sample relative L2 errors over every node,
+evaluated in float32 (`evaluate.py`); the stress R² is the median over the samples.
 
-| Model | DeepJEB test stress | SimJEB test stress | SimJEB test displacement |
+| Model | DeepJEB test, displacement / stress | SimJEB test, displacement / stress | SimJEB test stress R² |
 | --- | --- | --- | --- |
-| DeepJEB model | TBD | TBD | TBD |
-| + LoRA on SimJEB | | TBD | TBD |
+| DeepJEB model | 0.039 / 0.088 | 0.392 / 0.454 | 0.53 |
+| + LoRA on SimJEB | | 0.224 / 0.327 | 0.76 |
+
+The DeepJEB model reaches a median stress R² of 0.99 on the DeepJEB test designs.
+LoRA improves 94% of the SimJEB test samples; the validation error stops improving
+after about 10 of the 30 epochs.
 
 | Detector | DeepJEB test flagged | SimJEB flagged | AUC | Spearman with error |
 | --- | --- | --- | --- | --- |
-| Geometry guardrail | TBD | TBD | TBD | TBD |
-| Embedded guard | TBD | TBD | TBD | TBD |
-| Latent Mahalanobis, block 4 | TBD | TBD | TBD | TBD |
+| Geometry guardrail | 0.5% | 100% | 1.00 | 0.34 |
+| Embedded guard | 0% | 0.5% | 0.69 | 0.24 |
+| Latent Mahalanobis, geometry tokenizer | 1.5% | 51% | 0.96 | 0.33 |
+| Latent Mahalanobis, block 4 | 3.9% | 100% | 1.00 | 0.59 |
+
+The geometry guardrail separates the datasets through the global shape descriptors
+(mostly size and position), but its score hardly orders the SimJEB designs by the
+model's error. The embedded guard does not see the shift. The Mahalanobis distance of
+the fourth block's features separates the datasets and is the score that best follows
+the prediction error.
 
 ## Files
 

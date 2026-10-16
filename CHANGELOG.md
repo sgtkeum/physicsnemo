@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Adds the jet engine bracket example
+  (`examples/structural_mechanics/jet_engine_bracket`): a GeoTransolver trained
+  on every mesh node of DeepJEB, out-of-distribution screening of SimJEB designs
+  with the geometry guardrail, the embedded guard and the Mahalanobis distance
+  of intermediate GALE features, and LoRA transfer to SimJEB with
+  `physicsnemo.experimental.peft`.
 - Adds standalone FLARE++ attention and model APIs, with input-conditioned
   dynamic routing, plus a ``GALE_FPP`` backend for using the same mixer inside
   GeoTransolver.
